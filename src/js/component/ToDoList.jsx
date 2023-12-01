@@ -8,22 +8,13 @@ const ToDoList = () => {
   const [highlightedTask, setHighlightedTask] = useState(null);
 
   useEffect(() => {
-    createUser(API_URL, []);
+
     fetchTasks();
   }, []);
 
-  useEffect(() => {
-    updateList();
-  }, [tasks]);
-
+x
   const createUser = async (url, body) => {
     try {
-      const checkResponse = await fetch(url);
-      if (checkResponse.ok) {
-        console.log("User already exists");
-        return;
-      }
-
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -33,8 +24,9 @@ const ToDoList = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Error adding task! Status: ${response.status}`);
+        throw new Error(`Error adding task! Status: ${response.status}`)
       }
+      fetchTasks();
     } catch (error) {
       console.error("Error adding task:", error.message);
     }
@@ -43,7 +35,9 @@ const ToDoList = () => {
   const fetchTasks = async () => {
     try {
       const response = await fetch(API_URL);
+
       if (!response.ok) {
+        createUser(API_URL, []);
         throw new Error(`HTTP Error! Status: ${response.status}`);
       }
       const data = await response.json();
@@ -54,42 +48,45 @@ const ToDoList = () => {
   };
 
   const addTask = () => {
-    // Verificar si la tarea ya existe
+
     if (tasks.find((t) => t.label === task)) {
-      alert("Esta tarea ya existe. Por favor, ingrese una tarea única.");
+      alert("This task already exists. Please enter a unique task.");
       return;
     }
 
-    setTasks([...tasks, { label: task, done: false }]);
+    updateList([...tasks, { label: task, done: false }]);
   };
 
   const removeTask = (taskToDelete) => {
-    // Verificar si hay un usuario generado antes de permitir la eliminación
+
     if (!tasks.length) {
       alert("Debe generar un usuario antes de eliminar tareas.");
       return;
     }
 
-    setTasks(tasks.filter((t) => t.label !== taskToDelete.label));
+    updateList(tasks.filter((t) => t.label !== taskToDelete.label));
   };
 
-  const updateList = async () => {
+  const updateList = async (body) => {
     try {
       const response = await fetch(API_URL, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(tasks),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
         throw new Error(`Error adding task! Status: ${response.status}`);
       }
       setTask("");
+      await fetchTasks();
     } catch (error) {
       console.error("Error adding task:", error.message);
     }
+
+
   };
 
   const clearUser = async () => {
@@ -105,7 +102,8 @@ const ToDoList = () => {
         throw new Error(`Error deleting user! Status: ${response.status}`);
       }
 
-      setTasks([]);
+      await createUser(API_URL, []);
+
     } catch (error) {
       console.error("Error deleting user:", error.message);
     }
@@ -128,7 +126,8 @@ const ToDoList = () => {
       <button
         className="btn btn-danger"
         onClick={clearUser}
-        disabled={!tasks.length} // Deshabilitar el botón si no hay tareas
+        disabled={!tasks.length}
+
       >
         Delete User
       </button>

@@ -12,7 +12,7 @@ const ToDoList = () => {
     fetchTasks();
   }, []);
 
-x
+
   const createUser = async (url, body) => {
     try {
       const response = await fetch(url, {
@@ -36,7 +36,7 @@ x
     try {
       const response = await fetch(API_URL);
 
-      if (!response.ok) {
+      if (!response.ok) {  
         createUser(API_URL, []);
         throw new Error(`HTTP Error! Status: ${response.status}`);
       }
@@ -60,7 +60,7 @@ x
   const removeTask = (taskToDelete) => {
 
     if (!tasks.length) {
-      alert("Debe generar un usuario antes de eliminar tareas.");
+      alert("You must generate a user before deleting tasks.");
       return;
     }
 
